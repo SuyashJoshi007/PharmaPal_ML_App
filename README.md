@@ -20,7 +20,7 @@ Or, add static screenshots:
 
 | Home Page | Results Page |
 | :---: | :---: |
-| ![Home Page Screenshot](static/landing_page.png) | ![Results Page Screenshot](static/resultpage.png) |
+| ![Home Page Screenshot](static/landing_page.png) | ![Results Page Screenshot](static/result_page.png) |
 
 ---
 

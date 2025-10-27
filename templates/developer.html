@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PharmaPal - Meet the Developer</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img.png') }}" type="image/png">
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.1.3 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    
+    <!-- Bootstrap Icons 1.8.1 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    
+    <!-- Your Custom CSS (or static file) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Custom Styles for Theme -->
+    <style>
+        :root {
+            /* "Health-tech" teal theme */
+            --bs-primary: #00796B; /* Deep Teal */
+            --bs-primary-rgb: 0, 121, 107;
+            --bs-body-bg: #f4f9f8; /* Light Mint */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bs-body-bg); 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--bs-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #555;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--bs-primary);
+        }
+
+        /* --- Main Content --- */
+        .main-title {
+            font-weight: 700;
+            color: #333;
+        }
+        
+        /* --- Card Styles --- */
+        .result-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 20px -5px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e8e8e8;
+        }
+
+        /* --- Developer Profile Specific --- */
+        .profile-pic-placeholder {
+            width: 150px;
+            height: 150px;
+            background-color: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto; /* Center horizontally */
+        }
+        .profile-pic-placeholder i {
+            font-size: 4rem;
+            color: #adb5bd;
+        }
+        .profile-links .list-group-item {
+            border: none;
+            padding-left: 0;
+            padding-right: 0;
+        }
+         .profile-links a {
+             color: var(--bs-primary);
+             text-decoration: none;
+             font-weight: 500;
+         }
+         .profile-links a:hover {
+             text-decoration: underline;
+         }
+         .profile-bio h5 {
+             font-weight: 600;
+             margin-top: 1.5rem;
+             margin-bottom: 0.5rem;
+             color: var(--bs-primary);
+         }
+
+
+        /* --- Footer --- */
+        .footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .footer a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: var(--bs-primary);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand" href="/"> 
+                <img src="{{ url_for('static', filename='img.png') }}" alt="PharmaPal Logo">
+                PharmaPal
+            </a>
+            
+            <!-- Toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"> 
+                        <a class="nav-link active" href="/">Home</a> 
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/developer">Developer</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/blog">Blog</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/symptoms">Symptoms</a>
+                    </li>
+                </ul>
+                
+                <!-- Search -->
+                <form class="d-flex" role="search"> 
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Main Content Container -->
+    <div class="content-wrapper">
+        <main class="container my-5">
+            <div class="row">
+                <!-- Center the content -->
+                <div class="col-lg-8 col-xl-8 mx-auto">
+                    
+                    <h1 class="main-title text-center mb-4 gsap-title">Meet the Developer</h1>
+                    
+                    <!-- Developer Profile Card -->
+                    <div class="result-card p-4 p-md-5 gsap-card">
+                        <div class="row">
+                            <!-- Left Column: Picture and Links -->
+                            <div class="col-md-4 text-center">
+                                <div class="profile-pic-placeholder">
+                                    <i class="bi bi-person-fill"></i>
+                                    <!-- Replace above with: 
+                                         <img src="{{ url_for('static', filename='your-photo.jpg') }}" alt="Ayush Bhardwaj" class="img-fluid rounded-circle"> 
+                                         if you add a photo -->
+                                </div>
+                                <h4 class="fw-bold">Ayush Bhardwaj</h4>
+                                <p class="text-muted mb-3">AI & ML Enthusiast</p>
+                                
+                                <ul class="list-group list-group-flush profile-links">
+                                    <li class="list-group-item">
+                                        <a href="#" target="_blank"><i class="bi bi-github me-2"></i> GitHub Profile</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="#" target="_blank"><i class="bi bi-linkedin me-2"></i> LinkedIn Profile</a>
+                                    </li>
+                                     <li class="list-group-item">
+                                        <a href="#" target="_blank"><i class="bi bi-briefcase-fill me-2"></i> Portfolio</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Right Column: Bio Text -->
+                            <div class="col-md-8 profile-bio">
+                                <h5>Hello!</h5>
+                                <p>I'm Ayush Bhardwaj, your AI and Machine Learning Engineer behind PharmaPal. I am passionate about harnessing the power of technology to make a positive impact on people's lives. Allow me to share a bit about my journey in the world of artificial intelligence and machine learning.</p>
+                                
+                                <h5>My Expertise</h5>
+                                <p>With a strong academic background in computer science and a deep fascination for AI and ML, I embarked on a journey that has taken me across the globe, working on diverse and innovative projects.</p>
+                                
+                                <h5>A Commitment to Excellence</h5>
+                                <p>My work is driven by a commitment to excellence and a belief that technology should be accessible and beneficial to everyone. Whether it's developing predictive models, creating intelligent algorithms, or designing user-friendly interfaces, I strive for solutions that are both cutting-edge and user-centric.</p>
+                                
+                                <h5>Passion for Health Tech</h5>
+                                <p>The development of PharmaPal represents a convergence of my passion for AI and my dedication to improving healthcare accessibility. I believe that AI has the potential to transform the way we approach healthcare, making it more personalized and informative. This platform is a testament to that vision.</p>
+                                
+                                <h5>Join Me on this Journey</h5>
+                                <p>I invite you to explore PharmaPal and experience firsthand the fusion of AI and healthcare. Together, we can empower individuals with knowledge, promote well-being, and contribute to a brighter and healthier future.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+    ==================================================
+    FOOTER
+    ==================================================
+    -->
+    <footer class="footer gsap-footer">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <a class="navbar-brand" href="/">
+                        <img src="{{ url_for('static', filename='img.png') }}" alt="PharmaPal Logo">
+                        PharmaPal
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2024 PharmaPal. All rights reserved.</p>
+                    <p class="mb-0">Not for medical use. For demonstration purposes only.</p>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="me-3">Disclaimer</a>
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="/contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    
+    <!-- 
+    ==================================================
+    SCRIPTS
+    ==================================================
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- GSAP Animation Script -->
+    <script>
+        // Wait for the window to load
+        window.onload = () => {
+            const tl = gsap.timeline({ defaults: { duration: 0.6, ease: 'power3.out' } });
+
+            // 1. Animate Navbar
+            tl.from('.gsap-logo', { opacity: 0, y: -20, delay: 0.2 })
+              .from('.gsap-nav-item', { opacity: 0, y: -20, stagger: 0.1 }, "-=0.4"); 
+
+            // 2. Animate Page Content
+            tl.from('.gsap-title', { opacity: 0, y: 20 }, "-=0.3");
+            tl.from('.gsap-card', { opacity: 0, y: 20, stagger: 0.1 }, "-=0.4");
+            
+            // 3. Animate Footer
+            tl.from('.gsap-footer', { opacity: 0, y: 20 }, "-=0.5");
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PharmaPal - Symptom List</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img.png') }}" type="image/png">
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.1.3 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    
+    <!-- Bootstrap Icons 1.8.1 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    
+    <!-- Your Custom CSS (or static file) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Custom Styles for Theme -->
+    <style>
+        :root {
+            /* "Health-tech" teal theme */
+            --bs-primary: #00796B; /* Deep Teal */
+            --bs-primary-rgb: 0, 121, 107;
+            --bs-body-bg: #f4f9f8; /* Light Mint */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bs-body-bg); 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--bs-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #555;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--bs-primary);
+        }
+
+        /* --- Main Content --- */
+        .main-title {
+            font-weight: 700;
+            color: #333;
+        }
+        
+        /* --- Card Styles --- */
+        .result-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 20px -5px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e8e8e8;
+        }
+        .card-header-custom {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #333;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* --- Symptom List Grid --- */
+        .symptom-list {
+            list-style-type: none;
+            padding-left: 0;
+            column-count: 4; /* 4 columns on desktop */
+            column-gap: 2.5rem; /* Increased gap between columns */
+            margin-top: 1.5rem; /* Space below search bar */
+        }
+        
+        .symptom-list li {
+            padding: 0.4rem 0; /* Increased vertical padding */
+            font-weight: 500;
+            color: #333;
+            display: flex; /* Use flexbox for icon alignment */
+            align-items: center;
+            /* Prevent items from breaking across columns */
+            -webkit-column-break-inside: avoid;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        /* Style for the icon */
+        .symptom-list li i {
+            margin-right: 0.5rem;
+            color: var(--bs-primary); /* Teal icon */
+            font-size: 0.8rem; /* Smaller icon */
+        }
+        
+        /* Responsive columns */
+        @media (max-width: 1200px) { /* Adjust breakpoint for 3 columns */
+             .symptom-list { column-count: 3; }
+        }
+        @media (max-width: 768px) {
+            .symptom-list { column-count: 2; }
+        }
+        @media (max-width: 576px) {
+            .symptom-list { column-count: 1; }
+        }
+
+        /* NEW: Search input styling */
+        .search-symptoms {
+            border-radius: 0.5rem;
+        }
+        .search-symptoms:focus {
+             border-color: var(--bs-primary);
+             box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+        }
+
+
+        /* --- Footer --- */
+        .footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .footer a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            color: var(--bs-primary);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+   <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand" href="/"> 
+                <img src="{{ url_for('static', filename='img.png') }}" alt="PharmaPal Logo">
+                PharmaPal
+            </a>
+            
+            <!-- Toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"> 
+                        <a class="nav-link active" href="/">Home</a> 
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/developer">Developer</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/blog">Blog</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/symptoms">Symptoms</a>
+                    </li>
+                </ul>
+                
+                <!-- Search -->
+                <form class="d-flex" role="search"> 
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Main Content Container -->
+    <div class="content-wrapper">
+        <main class="container my-5">
+            <div class="row">
+                <!-- Center the content -->
+                <div class="col-lg-10 col-xl-10 mx-auto">
+                    
+                    <h1 class="main-title text-center mb-4 gsap-title">Symptom Reference List</h1>
+                    
+                    <!-- Symptom List Card -->
+                    <div class="result-card p-4 p-md-5 gsap-card">
+                        
+                        <!-- NEW: Card Header -->
+                        <div class="card-header-custom bg-transparent px-0 pt-0">
+                             <i class="bi bi-list-check fs-4 me-3 text-primary"></i>
+                             Symptom Reference
+                        </div>
+                        
+                        <p class="text-muted mt-3 mb-4">Use the search below to filter the list. Please use the exact spelling shown here when entering symptoms on the home page (separated by commas).</p>
+                        
+                        <!-- NEW: Search Input -->
+                        <div class="mb-4 gsap-search">
+                            <input type="text" id="symptomSearch" class="form-control form-control-lg search-symptoms" placeholder="Search symptoms...">
+                        </div>
+                        
+                        <ul class="symptom-list" id="symptomListUl">
+                            <!-- All 132 symptoms dynamically added with icons -->
+                            <li><i class="bi bi-dot"></i>itching</li>
+                            <li><i class="bi bi-dot"></i>skin_rash</li>
+                            <li><i class="bi bi-dot"></i>nodal_skin_eruptions</li>
+                            <li><i class="bi bi-dot"></i>continuous_sneezing</li>
+                            <li><i class="bi bi-dot"></i>shivering</li>
+                            <li><i class="bi bi-dot"></i>chills</li>
+                            <li><i class="bi bi-dot"></i>joint_pain</li>
+                            <li><i class="bi bi-dot"></i>stomach_pain</li>
+                            <li><i class="bi bi-dot"></i>acidity</li>
+                            <li><i class="bi bi-dot"></i>ulcers_on_tongue</li>
+                            <li><i class="bi bi-dot"></i>muscle_wasting</li>
+                            <li><i class="bi bi-dot"></i>vomiting</li>
+                            <li><i class="bi bi-dot"></i>burning_micturition</li>
+                            <li><i class="bi bi-dot"></i>spotting_urination</li>
+                            <li><i class="bi bi-dot"></i>fatigue</li>
+                            <li><i class="bi bi-dot"></i>weight_gain</li>
+                            <li><i class="bi bi-dot"></i>anxiety</li>
+                            <li><i class="bi bi-dot"></i>cold_hands_and_feets</li>
+                            <li><i class="bi bi-dot"></i>mood_swings</li>
+                            <li><i class="bi bi-dot"></i>weight_loss</li>
+                            <li><i class="bi bi-dot"></i>restlessness</li>
+                            <li><i class="bi bi-dot"></i>lethargy</li>
+                            <li><i class="bi bi-dot"></i>patches_in_throat</li>
+                            <li><i class="bi bi-dot"></i>irregular_sugar_level</li>
+                            <li><i class="bi bi-dot"></i>cough</li>
+                            <li><i class="bi bi-dot"></i>high_fever</li>
+                            <li><i class="bi bi-dot"></i>sunken_eyes</li>
+                            <li><i class="bi bi-dot"></i>breathlessness</li>
+                            <li><i class="bi bi-dot"></i>sweating</li>
+                            <li><i class="bi bi-dot"></i>dehydration</li>
+                            <li><i class="bi bi-dot"></i>indigestion</li>
+                            <li><i class="bi bi-dot"></i>headache</li>
+                            <li><i class="bi bi-dot"></i>yellowish_skin</li>
+                            <li><i class="bi bi-dot"></i>dark_urine</li>
+                            <li><i class="bi bi-dot"></i>nausea</li>
+                            <li><i class="bi bi-dot"></i>loss_of_appetite</li>
+                            <li><i class="bi bi-dot"></i>pain_behind_the_eyes</li>
+                            <li><i class="bi bi-dot"></i>back_pain</li>
+                            <li><i class="bi bi-dot"></i>constipation</li>
+                            <li><i class="bi bi-dot"></i>abdominal_pain</li>
+                            <li><i class="bi bi-dot"></i>diarrhoea</li>
+                            <li><i class="bi bi-dot"></i>mild_fever</li>
+                            <li><i class="bi bi-dot"></i>yellow_urine</li>
+                            <li><i class="bi bi-dot"></i>yellowing_of_eyes</li>
+                            <li><i class="bi bi-dot"></i>acute_liver_failure</li>
+                            <li><i class="bi bi-dot"></i>fluid_overload</li>
+                            <li><i class="bi bi-dot"></i>swelling_of_stomach</li>
+                            <li><i class="bi bi-dot"></i>swelled_lymph_nodes</li>
+                            <li><i class="bi bi-dot"></i>malaise</li>
+                            <li><i class="bi bi-dot"></i>blurred_vision</li>
+                            <li><i class="bi bi-dot"></i>phlegm</li>
+                            <li><i class="bi bi-dot"></i>throat_irritation</li>
+                            <li><i class="bi bi-dot"></i>redness_of_eyes</li>
+                            <li><i class="bi bi-dot"></i>sinus_pressure</li>
+                            <li><i class="bi bi-dot"></i>runny_nose</li>
+                            <li><i class="bi bi-dot"></i>congestion</li>
+                            <li><i class="bi bi-dot"></i>chest_pain</li>
+                            <li><i class="bi bi-dot"></i>weakness_in_limbs</li>
+                            <li><i class="bi bi-dot"></i>fast_heart_rate</li>
+                            <li><i class="bi bi-dot"></i>pain_in_bowel_movements</li>
+                            <li><i class="bi bi-dot"></i>pain_in_anal_region</li>
+                            <li><i class="bi bi-dot"></i>bloody_stool</li>
+                            <li><i class="bi bi-dot"></i>irritation_in_anus</li>
+                            <li><i class="bi bi-dot"></i>neck_pain</li>
+                            <li><i class="bi bi-dot"></i>dizziness</li>
+                            <li><i class="bi bi-dot"></i>cramps</li>
+                            <li><i class="bi bi-dot"></i>bruising</li>
+                            <li><i class="bi bi-dot"></i>obesity</li>
+                            <li><i class="bi bi-dot"></i>swollen_legs</li>
+                            <li><i class="bi bi-dot"></i>swollen_blood_vessels</li>
+                            <li><i class="bi bi-dot"></i>puffy_face_and_eyes</li>
+                            <li><i class="bi bi-dot"></i>enlarged_thyroid</li>
+                            <li><i class="bi bi-dot"></i>brittle_nails</li>
+                            <li><i class="bi bi-dot"></i>swollen_extremeties</li>
+                            <li><i class="bi bi-dot"></i>excessive_hunger</li>
+                            <li><i class="bi bi-dot"></i>extra_marital_contacts</li>
+                            <li><i class="bi bi-dot"></i>drying_lips</li>
+                            <li><i class="bi bi-dot"></i>slurred_speech</li>
+                            <li><i class="bi bi-dot"></i>knee_pain</li>
+                            <li><i class="bi bi-dot"></i>hip_joint_pain</li>
+                            <li><i class="bi bi-dot"></i>muscle_weakness</li>
+                            <li><i class="bi bi-dot"></i>stiff_neck</li>
+                            <li><i class="bi bi-dot"></i>swelling_joints</li>
+                            <li><i class="bi bi-dot"></i>movement_stiffness</li>
+                            <li><i class="bi bi-dot"></i>spinning_movements</li>
+                            <li><i class="bi bi-dot"></i>loss_of_balance</li>
+                            <li><i class="bi bi-dot"></i>unsteadiness</li>
+                            <li><i class="bi bi-dot"></i>weakness_body_side</li>
+                            <li><i class="bi bi-dot"></i>loss_of_smell</li>
+                            <li><i class="bi bi-dot"></i>bladder_discomfort</li>
+                            <li><i class="bi bi-dot"></i>foul_smell_of_urine</li>
+                            <li><i class="bi bi-dot"></i>continuous_feel_of_urine</li>
+                            <li><i class="bi bi-dot"></i>passage_of_gases</li>
+                            <li><i class="bi bi-dot"></i>internal_itching</li>
+                            <li><i class="bi bi-dot"></i>toxic_look_(typhos)</li>
+                            <li><i class="bi bi-dot"></i>depression</li>
+                            <li><i class="bi bi-dot"></i>irritability</li>
+                            <li><i class="bi bi-dot"></i>muscle_pain</li>
+                            <li><i class="bi bi-dot"></i>altered_sensorium</li>
+                            <li><i class="bi bi-dot"></i>red_spots_over_body</li>
+                            <li><i class="bi bi-dot"></i>belly_pain</li>
+                            <li><i class="bi bi-dot"></i>abnormal_menstruation</li>
+                            <li><i class="bi bi-dot"></i>dischromic_patches</li>
+                            <li><i class="bi bi-dot"></i>watering_from_eyes</li>
+                            <li><i class="bi bi-dot"></i>increased_appetite</li>
+                            <li><i class="bi bi-dot"></i>polyuria</li>
+                            <li><i class="bi bi-dot"></i>family_history</li>
+                            <li><i class="bi bi-dot"></i>mucoid_sputum</li>
+                            <li><i class="bi bi-dot"></i>rusty_sputum</li>
+                            <li><i class="bi bi-dot"></i>lack_of_concentration</li>
+                            <li><i class="bi bi-dot"></i>visual_disturbances</li>
+                            <li><i class="bi bi-dot"></i>receive_blood_transfusion</li>
+                            <li><i class="bi bi-dot"></i>receiving_injections</li>
+                            <li><i class="bi bi-dot"></i>coma</li>
+                            <li><i class="bi bi-dot"></i>stomach_bleeding</li>
+                            <li><i class="bi bi-dot"></i>distention_of_abdomen</li>
+                            <li><i class="bi bi-dot"></i>history_consumption</li>
+                            <li><i class="bi bi-dot"></i>fluid_overload.1</li>
+                            <li><i class="bi bi-dot"></i>blood_in_sputum</li>
+                            <li><i class="bi bi-dot"></i>prominent_veins_on_calf</li>
+                            <li><i class="bi bi-dot"></i>palpitations</li>
+                            <li><i class="bi bi-dot"></i>painful_walking</li>
+                            <li><i class="bi bi-dot"></i>pus_filled_pimples</li>
+                            <li><i class="bi bi-dot"></i>blackheads</li>
+                            <li><i class="bi bi-dot"></i>scurring</li>
+                            <li><i class="bi bi-dot"></i>skin_peeling</li>
+                            <li><i class="bi bi-dot"></i>silver_like_dusting</li>
+                            <li><i class="bi bi-dot"></i>small_dents_in_nails</li>
+                            <li><i class="bi bi-dot"></i>inflammatory_nails</li>
+                            <li><i class="bi bi-dot"></i>blister</li>
+                            <li><i class="bi bi-dot"></i>red_sore_around_nose</li>
+                            <li><i class="bi bi-dot"></i>yellow_crust_ooze</li>
+                        </ul>
+
+                         <!-- NEW: Link back to home -->
+                         <div class="text-center mt-4 pt-4 border-top">
+                             <a href="/" class="btn btn-primary btn-lg">
+                                 <i class="bi bi-arrow-left-circle-fill me-2"></i> Back to Symptom Checker
+                             </a>
+                         </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+    ==================================================
+    FOOTER
+    ==================================================
+    -->
+    <footer class="footer gsap-footer">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <a class="navbar-brand" href="/">
+                        <img src="{{ url_for('static', filename='img.png') }}" alt="PharmaPal Logo">
+                        PharmaPal
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2024 PharmaPal. All rights reserved.</p>
+                    <p class="mb-0">Not for medical use. For demonstration purposes only.</p>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="me-3">Disclaimer</a>
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="/contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    
+    <!-- 
+    ==================================================
+    SCRIPTS
+    ==================================================
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- New GSAP & Search Filter Script -->
+    <script>
+        // Wait for the window to load
+        window.onload = () => {
+            // GSAP Animations
+            const tl = gsap.timeline({ defaults: { duration: 0.6, ease: 'power3.out' } });
+
+            // 1. Animate Navbar
+            tl.from('.gsap-logo', { opacity: 0, y: -20, delay: 0.2 })
+              .from('.gsap-nav-item', { opacity: 0, y: -20, stagger: 0.1 }, "-=0.4"); 
+
+            // 2. Animate Page Content
+            tl.from('.gsap-title', { opacity: 0, y: 20 }, "-=0.3");
+            tl.from('.gsap-card', { opacity: 0, y: 20 }, "-=0.4");
+            tl.from('.gsap-search', { opacity: 0, y: 10 }, "-=0.4"); // Animate search bar
+            
+            // 3. Animate Footer
+            tl.from('.gsap-footer', { opacity: 0, y: 20 }, "-=0.5");
+
+            // Search Filter Logic
+            const searchInput = document.getElementById('symptomSearch');
+            const symptomList = document.getElementById('symptomListUl');
+            const symptoms = symptomList.getElementsByTagName('li');
+
+            searchInput.addEventListener('keyup', function() {
+                const filter = searchInput.value.toLowerCase();
+                
+                for (let i = 0; i < symptoms.length; i++) {
+                    let textValue = symptoms[i].textContent || symptoms[i].innerText;
+                    if (textValue.toLowerCase().indexOf(filter) > -1) {
+                        symptoms[i].style.display = ""; // Show match
+                    } else {
+                        symptoms[i].style.display = "none"; // Hide non-match
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
+

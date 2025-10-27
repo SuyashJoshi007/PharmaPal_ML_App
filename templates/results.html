@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PharmaPal - AI Results</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img.png') }}" type="image/png">
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap 5.1.3 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+
+    <!-- Bootstrap Icons 1.8.1 CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+
+    <!-- Your Custom CSS (or static file) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Custom Styles for Theme -->
+    <style>
+        :root {
+            /* "Health-tech" teal theme */
+            --bs-primary: #00796B;
+            /* Deep Teal */
+            --bs-primary-rgb: 0, 121, 107;
+            --bs-body-bg: #f4f9f8;
+            /* Light Mint */
+            --card-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.12);
+            /* Chart Colors */
+            --color-precautions: #ffc107;
+            /* Yellow */
+            --color-medications: #dc3545;
+            /* Red */
+            --color-workouts: #0d6efd;
+            /* Blue */
+            --color-diets: #198754;
+            /* Green */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bs-body-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #444;
+        }
+
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.07);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--bs-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #555;
+            transition: color 0.2s;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--bs-primary);
+        }
+
+        /* --- Main Content --- */
+        .results-title {
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* --- Report Cards --- */
+        .report-card,
+        .tabs-card,
+        .next-steps-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e8e8e8;
+            height: 100%;
+            /* Ensure cards in a row are same height */
+        }
+
+        .card-header-custom {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+            padding: 0.8rem 1.25rem;
+            border-bottom: 1px solid #eee;
+            background-color: #fafdfc;
+        }
+
+        .card-header-custom .bi {
+            color: var(--bs-primary);
+            margin-right: 0.75rem;
+        }
+
+        /* --- Main Report Card Extras --- */
+        .report-timestamp {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .quick-info-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-info-item .bi {
+            color: var(--bs-primary);
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        /* --- Tab Navigation --- */
+        .nav-tabs {
+            border-bottom: 0;
+        }
+
+        .nav-tabs .nav-link {
+            border: 0;
+            color: #6c757d;
+            font-weight: 600;
+            padding: 0.8rem 1.25rem;
+            border-bottom: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--bs-primary);
+            background-color: transparent;
+            border-bottom: 3px solid var(--bs-primary);
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--bs-primary);
+            border-bottom: 3px solid #e0e0e0;
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+        }
+
+        .tab-content .list-group-item {
+            padding: 0.8rem 0;
+            border: none;
+            display: flex;
+            align-items: start;
+        }
+
+        .tab-content .list-group-item i {
+            margin-top: 0.2rem;
+        }
+
+        .tab-content .list-group-item .learn-more {
+            font-size: 0.85rem;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+
+        /* --- Severity Badge --- */
+        .severity-badge {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50rem;
+            background-color: #fff3cd;
+            color: #664d03;
+            border: 1px solid #ffeeba;
+        }
+
+        /* --- Symptom Tags & Severity --- */
+        .symptom-tag-item {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e7f3f1;
+            border: 1px solid #c8e0de;
+            border-radius: 0.35rem;
+            padding: 0.3rem 0.75rem;
+            font-weight: 500;
+            margin: 0.2rem;
+        }
+
+        .severity-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .severity-low {
+            background-color: var(--color-diets);
+        }
+
+        /* Green */
+        .severity-medium {
+            background-color: var(--color-precautions);
+        }
+
+        /* Yellow */
+        .severity-high {
+            background-color: var(--color-medications);
+        }
+
+        /* Red */
+
+        /* --- Related Conditions --- */
+        .related-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .related-item a {
+            text-decoration: none;
+            font-weight: 500;
+            color: var(--bs-primary);
+        }
+
+        /* Use primary color */
+        .related-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- NEW: Recommendations Overview Chart --- */
+        .overview-chart-container {
+            position: relative;
+            height: 200px;
+            /* Adjust height as needed */
+            width: 100%;
+            max-width: 250px;
+            /* Limit max width */
+            margin: 1rem auto 0 auto;
+            /* Center chart */
+        }
+
+
+        /* --- Footer --- */
+        .footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .footer a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer a:hover {
+            color: var(--bs-primary);
+            text-decoration: underline;
+        }
+
+        .footer .navbar-brand img {
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+        }
+
+        .footer p {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Print specific styles */
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .navbar,
+            .footer,
+            .next-steps-card .btn {
+                display: none;
+            }
+
+            .report-card,
+            .tabs-card,
+            .next-steps-card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                margin-bottom: 1rem;
+                height: auto !important;
+                /* Allow height adjust */
+            }
+
+            .content-wrapper {
+                margin-top: 0;
+            }
+
+            .container {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            .col-lg-10,
+            .col-xl-10,
+            .col-lg-4,
+            .col-lg-5,
+            .col-lg-7 {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            /* Stack columns */
+            .nav-tabs {
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .tab-content .tab-pane {
+                display: block !important;
+                opacity: 1 !important;
+                border: 1px solid #eee;
+                margin-top: -1px;
+                padding: 1rem;
+            }
+
+            .nav-tabs .nav-link {
+                border-bottom: 1px solid transparent;
+            }
+
+            .nav-tabs .nav-link.active {
+                border: 1px solid #dee2e6;
+                border-bottom-color: #fff;
+                background-color: #fff;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+                page-break-after: avoid;
+            }
+
+            .chart-container,
+            .overview-chart-container {
+                display: none;
+            }
+
+            /* Hide charts */
+            #confidenceText {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/"> <img src="{{ url_for('static', filename='img.png') }}"
+                    alt="PharmaPal Logo"> PharmaPal </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span
+                    class="navbar-toggler-icon"></span> </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"> <a class="nav-link" href="/">Home</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="/about">About</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="/contact">Contact</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="/developer">Developer</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="/blog">Blog</a> </li>
+                    <li class="nav-item"> <a class="nav-link" href="/symptoms">Symptoms</a> </li>
+                </ul>
+                <form class="d-flex" role="search"> <input class="form-control me-2" type="search" placeholder="Search"
+                        aria-label="Search"> <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="content-wrapper">
+        <main class="container my-5">
+            <div class="row">
+                <!-- Center the content -->
+                <div class="col-lg-10 col-xl-10 mx-auto">
+
+                    {% if predicted_disease %}
+                    <!-- Results Section -->
+                    <div class="results-section">
+                        <h1 class="results-title text-center mb-4">Your AI Health Report</h1>
+
+                        <!-- Main Report Card -->
+                        <div class="report-card p-4 p-md-5 mb-4 gsap-main-card">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h2 class="display-5 fw-bold text-primary mb-1">{{ predicted_disease }}</h2>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <p class="fs-5 text-muted mb-0 me-3">Potential Condition Analysis</p>
+                                        <span class="badge severity-badge">Requires Consultation</span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <p class="report-timestamp mb-0">Generated: <span id="reportTime"></span></p>
+                                    <div class="mt-2 d-none d-md-block">
+                                        <span class="badge bg-light text-dark border me-1" title="Common Age Group"><i
+                                                class="bi bi-person me-1"></i> Adults</span>
+                                        <span class="badge bg-light text-dark border" title="Transmissibility"><i
+                                                class="bi bi-people me-1"></i> Low</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="my-4">
+                            <div class="row align-items-center">
+                                <div class="col-lg-8">
+                                    <h5 class="fw-semibold mb-2"><i
+                                            class="bi bi-info-circle-fill me-1 text-primary"></i> Description</h5>
+                                    <p>{{ dis_des }}</p>
+                                </div>
+                                <div class="col-lg-4 text-center">
+                                    <div class="chart-container" style="position: relative; height:180px; width:100%;">
+                                        <canvas id="confidenceChart"></canvas>
+                                    </div>
+                                    <p class="fs-4 fw-bold text-primary mb-0 mt-3" id="confidenceText">
+                                        {{ "%.1f"|format(prediction_confidence) }}% Confidence
+                                    </p>
+                                    <p class="text-muted small">AI Analysis Confidence Score</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row for Symptoms, Related Conditions, and Overview Chart -->
+                        <div class="row g-4 mb-4">
+                            <!-- Symptoms Analyzed Card (Adjusted width) -->
+                            <div class="col-lg-4 gsap-symptoms-card">
+                                <div class="report-card p-4"> <!-- Removed h-100 -->
+                                    <h5
+                                        class="fw-bold mb-3 card-header-custom px-0 pt-0 bg-transparent border-bottom-0">
+                                        <i class="bi bi-list-check"></i>Symptoms</h5>
+                                    <div class="d-flex flex-wrap">
+                                        {% for s in user_symptoms %}
+                                        <div class="symptom-tag-item">
+                                            {% set severity = ['low', 'medium', 'high'][loop.index0 % 3] %}
+                                            <span class="severity-dot severity-{{ severity }}"
+                                                title="Severity (Mock): {{ severity|title }}"></span>
+                                            {{ s|title }}
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted">No symptoms provided.</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Related Conditions Card (Adjusted width) -->
+                            <div class="col-lg-4 gsap-related-card">
+                                <div class="report-card p-4"> <!-- Removed h-100 -->
+                                    <h5
+                                        class="fw-bold mb-3 card-header-custom px-0 pt-0 bg-transparent border-bottom-0">
+                                        <i class="bi bi-diagram-3"></i>Related</h5>
+                                    <p class="text-muted small">Other potential conditions:</p>
+                                    <ul class="list-unstyled">
+                                        <li class="related-item"><a href="#" class="text-primary"><i
+                                                    class="bi bi-link-45deg me-1"></i> Condition A</a></li>
+                                        <li class="related-item"><a href="#" class="text-primary"><i
+                                                    class="bi bi-link-45deg me-1"></i> Condition B</a></li>
+                                        <li class="related-item"><a href="#" class="text-primary"><i
+                                                    class="bi bi-link-45deg me-1"></i> Condition C</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- NEW: Recommendations Overview Card (Adjusted width) -->
+                            <div class="col-lg-4 gsap-overview-card">
+                                <div class="report-card p-4"> <!-- Removed h-100 -->
+                                    <h5
+                                        class="fw-bold mb-3 card-header-custom px-0 pt-0 bg-transparent border-bottom-0">
+                                        <i class="bi bi-pie-chart-fill"></i>Overview</h5>
+                                    <p class="text-muted small text-center">Breakdown of Recommendations:</p>
+                                    <div class="overview-chart-container">
+                                        <canvas id="recommendationsChart"
+                                            data-precautions-count="{{ my_precautions|length }}"
+                                            data-medications-count="{{ medications|length }}"
+                                            data-workouts-count="{{ workout|length }}"
+                                            data-diets-count="{{ my_diet|length }}">
+                                        </canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Tabbed Interface for Recommendations -->
+                        <div class="tabs-card gsap-tabs-card">
+                            <!-- Tab Headers -->
+                            <ul class="nav nav-tabs" id="recommendationTabs" role="tablist">
+                                <li class="nav-item" role="presentation"> <button class="nav-link active"
+                                        id="precautions-tab" data-bs-toggle="tab" data-bs-target="#precautions"
+                                        type="button" role="tab" aria-controls="precautions" aria-selected="true"> <i
+                                            class="bi bi-exclamation-triangle-fill me-1"></i> Precautions </button>
+                                </li>
+                                <li class="nav-item" role="presentation"> <button class="nav-link" id="medications-tab"
+                                        data-bs-toggle="tab" data-bs-target="#medications" type="button" role="tab"
+                                        aria-controls="medications" aria-selected="false"> <i
+                                            class="bi bi-clipboard-pulse me-1"></i> Medications </button> </li>
+                                <li class="nav-item" role="presentation"> <button class="nav-link" id="workouts-tab"
+                                        data-bs-toggle="tab" data-bs-target="#workouts" type="button" role="tab"
+                                        aria-controls="workouts" aria-selected="false"> <i
+                                            class="bi bi-heart-pulse-fill me-1"></i> Workouts </button> </li>
+                                <li class="nav-item" role="presentation"> <button class="nav-link" id="diets-tab"
+                                        data-bs-toggle="tab" data-bs-target="#diets" type="button" role="tab"
+                                        aria-controls="diets" aria-selected="false"> <i class="bi bi-list-stars me-1"></i>
+                                        Diets </button> </li>
+                            </ul>
+                            <!-- Tab Content -->
+                            <div class="tab-content" id="recommendationTabsContent">
+                                <div class="tab-pane fade show active" id="precautions" role="tabpanel"
+                                    aria-labelledby="precautions-tab">
+                                    <ul class="list-group list-group-flush">
+                                        {% for i in my_precautions %} <li class="list-group-item"> <i
+                                                class="bi bi-exclamation-triangle-fill text-warning me-3 fs-5"></i>
+                                            <div class="flex-grow-1">{{ i }}</div> <a href="#"
+                                                class="learn-more text-primary small ms-3">Learn More</a>
+                                        </li> {% else %} <li class="list-group-item text-muted">No precautions listed.
+                                        </li> {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="medications" role="tabpanel"
+                                    aria-labelledby="medications-tab">
+                                    <ul class="list-group list-group-flush">
+                                        {% for i in medications %} <li class="list-group-item"> <i
+                                                class="bi bi-clipboard-pulse text-danger me-3 fs-5"></i>
+                                            <div class="flex-grow-1">{{ i }}</div> <a href="#"
+                                                class="learn-more text-primary small ms-3">Learn More</a>
+                                        </li> {% else %} <li class="list-group-item text-muted">No medications listed.
+                                            Consult a doctor.</li> {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="workouts" role="tabpanel" aria-labelledby="workouts-tab">
+                                    <ul class="list-group list-group-flush">
+                                        {% for i in workout %} <li class="list-group-item"> <i
+                                                class="bi bi-heart-pulse-fill text-primary me-3 fs-5"></i>
+                                            <div class="flex-grow-1">{{ i }}</div> <a href="#"
+                                                class="learn-more text-primary small ms-3">Learn More</a>
+                                        </li> {% else %} <li class="list-group-item text-muted">No workouts listed.</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="diets" role="tabpanel" aria-labelledby="diets-tab">
+                                    <ul class="list-group list-group-flush">
+                                        {% for i in my_diet %} <li class="list-group-item"> <i
+                                                class="bi bi-list-stars text-success me-3 fs-5"></i>
+                                            <div class="flex-grow-1">{{ i }}</div> <a href="#"
+                                                class="learn-more text-primary small ms-3">Learn More</a>
+                                        </li> {% else %} <li class="list-group-item text-muted">No diets listed.</li> {%
+                                        endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Next Steps Card -->
+                        <div class="next-steps-card p-4 mt-4 gsap-next-steps-card">
+                            <div class="row align-items-center gy-3">
+                                <div class="col-lg-7">
+                                    <h5 class="fw-bold"><i class="bi bi-person-check-fill me-2 text-primary"></i>Your
+                                        Next Steps</h5>
+                                    <p class="mb-lg-0">This AI analysis is for informational purposes only and is
+                                        <strong>not a substitute for professional medical advice.</strong> Please
+                                        consult a healthcare provider to confirm this analysis.</p>
+                                </div>
+                                <div class="col-lg-5 text-lg-end">
+                                    <div class="d-flex flex-wrap justify-content-lg-end gap-2">
+                                        <a href="#" class="btn btn-primary btn-sm"> <i class="bi bi-search me-1"></i>
+                                            Find Specialist </a>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="printReport()"> <i
+                                                class="bi bi-printer-fill me-1"></i> Print </button>
+                                        <a href="/" class="btn btn-outline-secondary btn-sm"> <i
+                                                class="bi bi-house-door-fill me-1"></i> Home </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% else %}
+                    <!-- Fallback message -->
+                    <div class="alert alert-info text-center" role="alert">
+                        <h4 class="alert-heading">No Results Available</h4>
+                        <p>It looks like you've landed here directly. Please <a href="/" class="alert-link">go back to
+                                the home page</a> and enter your symptoms to generate a report.</p>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+    ==================================================
+    FOOTER
+    ==================================================
+    -->
+    <footer class="footer gsap-footer">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-3 mb-md-0 text-md-start">
+                    <a class="navbar-brand" href="/">
+                        <img src="{{ url_for('static', filename='img.png') }}" alt="PharmaPal Logo"
+                            style="width: 30px; height: 30px; margin-right: 5px;">
+                        PharmaPal
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <p class="mb-1">&copy; 2024 PharmaPal. All rights reserved.</p>
+                    <p class="mb-0 small">Not for medical use. Demo purposes only.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="#" class="me-3">Disclaimer</a>
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="/contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 
+    ==================================================
+    SCRIPTS
+    ==================================================
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+
+    <!-- GSAP, Chart.js & Helper Scripts -->
+    <script>
+        function printReport() { window.print(); }
+        function setReportTime() {
+            const now = new Date();
+            const timeEl = document.getElementById('reportTime');
+            if (timeEl) { timeEl.textContent = now.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }); }
+        }
+
+        window.onload = () => {
+            setReportTime();
+            const tl = gsap.timeline({ defaults: { duration: 0.6, ease: 'power3.out' } });
+
+            if (document.querySelector('.results-section')) {
+                tl.from('.results-title', { opacity: 0, y: 20, delay: 0.2 });
+                tl.from('.gsap-main-card', { opacity: 0, y: 20 }, "-=0.4");
+                tl.from('.gsap-symptoms-card', { opacity: 0, y: 20 }, "-=0.3");
+                tl.from('.gsap-related-card', { opacity: 0, y: 20 }, "-=0.4");
+                tl.from('.gsap-overview-card', { opacity: 0, y: 20 }, "-=0.4"); // Animate new chart card
+                tl.from('.gsap-tabs-card', { opacity: 0, y: 20 }, "-=0.3");
+                tl.from('.gsap-next-steps-card', { opacity: 0, y: 20 }, "-=0.3");
+
+                // Confidence Chart
+                const confidenceChartCanvas = document.getElementById('confidenceChart');
+                if (confidenceChartCanvas) {
+                    const ctx = confidenceChartCanvas.getContext('2d');
+                    const confidenceText = document.getElementById('confidenceText').textContent;
+                    const confidenceScore = parseFloat(confidenceText) || 95.0;
+                    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim() || '#00796B';
+                    const primaryColorAlpha = 'rgba(0, 121, 107, 0.8)';
+                    new Chart(ctx, { type: 'doughnut', data: { labels: ['Confidence', 'Other'], datasets: [{ label: 'Prediction Confidence', data: [confidenceScore, 100 - confidenceScore], backgroundColor: [primaryColorAlpha, 'rgba(230, 230, 230, 0.8)'], borderColor: [primaryColor, '#e6e6e6'], borderWidth: 1, cutout: '70%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return ` ${context.label}: ${context.raw.toFixed(1)}%`; } } } } } });
+                }
+
+                // NEW: Recommendations Overview Chart
+                const overviewChartCanvas = document.getElementById('recommendationsChart');
+                if (overviewChartCanvas) {
+                    const ctxOverview = overviewChartCanvas.getContext('2d');
+                    const precautionsCount = parseInt(overviewChartCanvas.dataset.precautionsCount) || 0;
+                    const medicationsCount = parseInt(overviewChartCanvas.dataset.medicationsCount) || 0;
+                    const workoutsCount = parseInt(overviewChartCanvas.dataset.workoutsCount) || 0;
+                    const dietsCount = parseInt(overviewChartCanvas.dataset.dietsCount) || 0;
+
+                    // Only render chart if there are recommendations
+                    if (precautionsCount + medicationsCount + workoutsCount + dietsCount > 0) {
+                        new Chart(ctxOverview, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Precautions', 'Medications', 'Workouts', 'Diets'],
+                                datasets: [{
+                                    label: 'Recommendation Counts',
+                                    data: [precautionsCount, medicationsCount, workoutsCount, dietsCount],
+                                    backgroundColor: [
+                                        '#4285F4', // Precautions - Blue
+                                        '#EA4335', // Medications - Red
+                                        '#FBBC05', // Workouts - Yellow
+                                        '#34A853'  // Diets - Green
+                                    ],
+                                    hoverBackgroundColor: [
+                                        '#6AA9FF', // Lighter Blue
+                                        '#FF6B6B', // Lighter Red
+                                        '#FFD54F', // Lighter Yellow
+                                        '#66BB6A'  // Lighter Green
+                                    ],
+                                    borderColor: '#ffffff',
+                                    borderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: { boxWidth: 14, padding: 15, font: { size: 14, family: 'Poppins' } }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return ` ${context.label}: ${context.raw}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                animation: {
+                                    animateScale: true,
+                                    animateRotate: true
+                                }
+                            }
+                        });
+                    } else {
+                        // Optional: Display a message if no recommendations
+                        overviewChartCanvas.parentElement.innerHTML = '<p class="text-muted text-center mt-3">No specific recommendations provided in these categories.</p>';
+                    }
+                }
+
+
+            } else {
+                gsap.from('.alert-info', { opacity: 0, y: 20, delay: 0.3 });
+            }
+
+            tl.from('.gsap-footer', { opacity: 0, y: 20 }, "-=0.5");
+        };
+    </script>
+</body>
+
+</html>

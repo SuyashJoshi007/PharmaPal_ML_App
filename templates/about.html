@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PharmaPal - About Us</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img.png') }}" type="image/png">
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.1.3 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    
+    <!-- Bootstrap Icons 1.8.1 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    
+    <!-- Your Custom CSS (or static file) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Custom Styles for Theme (Consistent with other pages) -->
+    <style>
+        :root {
+            /* "Health-tech" teal theme */
+            --bs-primary: #00796B; /* Deep Teal */
+            --bs-primary-rgb: 0, 121, 107;
+            --bs-body-bg: #f4f9f8; /* Light Mint */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bs-body-bg); 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--bs-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #555;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--bs-primary);
+        }
+
+        /* --- Main Content --- */
+        .main-title {
+            font-weight: 700;
+            color: #333;
+        }
+        
+        /* --- Card Styles --- */
+        .result-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 20px -5px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e8e8e8;
+        }
+         .card-header-custom {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #333; 
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #eee;
+            background-color: #fafdfc; 
+        }
+        
+        /* Specific styles for About page content */
+        .about-content h3 {
+            font-weight: 600;
+            color: var(--bs-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .about-content p {
+            line-height: 1.7;
+            color: #555;
+        }
+
+
+        /* --- Footer --- REMOVED FOR THIS PAGE --- */
+        /*
+        .footer { ... } 
+        */
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand" href="/"> 
+                <img src="{{ url_for('static', filename='img.png') }}" alt="PharmaPal Logo">
+                PharmaPal
+            </a>
+            
+            <!-- Toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/">Home</a> 
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link active" href="/about">About</a> <!-- Set active -->
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/contact">Contact</a> 
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/developer">Developer</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/blog">Blog</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/symptoms">Symptoms</a>
+                    </li>
+                </ul>
+                
+                <!-- Search -->
+                <form class="d-flex" role="search"> 
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="content-wrapper">
+        <main class="container my-5">
+            <div class="row justify-content-center"> <!-- Center content -->
+                <div class="col-lg-10 col-xl-8"> <!-- Adjust width -->
+                    
+                    <h1 class="main-title text-center mb-4 gsap-title">About Us</h1>
+                    
+                    <!-- About Content Card -->
+                    <div class="result-card gsap-card">
+                        <div class="card-header-custom">
+                             <i class="bi bi-info-circle-fill fs-5 me-3 text-primary"></i>
+                             Our Story & Mission
+                        </div>
+                        <div class="p-4 p-md-5 about-content">
+                             
+                            <p class="lead text-center mb-4">Welcome to PharmaPal, where health meets technology for a brighter, healthier future.</p>
+
+                            <h3>Our Vision</h3>
+                            <p>We envision a world where access to healthcare information is not just a luxury but a fundamental right. Our journey began with a simple yet powerful idea: to empower individuals with the knowledge and tools they need to take control of their health.</p>
+                            
+                            <h3>Who We Are</h3>
+                            <p>We are a passionate team of healthcare professionals, data scientists, and technology enthusiasts who share a common goal: to make healthcare accessible, understandable, and personalized for you. With years of experience in both healthcare and cutting-edge technology, we've come together to create this platform as a testament to our commitment to your well-being.</p>
+                            
+                            <h3>Our Mission</h3>
+                            <p>At PharmaPal, our mission is to provide you with a seamless and intuitive platform that leverages the power of artificial intelligence and machine learning. We want to assist you in identifying potential health concerns based on your reported symptoms, all while offering a wealth of educational resources to enhance your health literacy.</p>
+                            
+                            <h3>How We Do It</h3>
+                            <p>Our platform utilizes a robust machine learning model trained on a vast dataset of symptoms and diseases. By inputting your symptoms, our system generates potential condition insights, allowing you to have more informed discussions with healthcare professionals.</p>
+                            
+                            <h3>Your Well-being, Our Priority</h3>
+                            <p>Your health is our top priority. We understand that navigating the complexities of healthcare can be daunting. That's why we've aimed to provide not only potential condition insights but also comprehensive information about related diseases, including descriptions, recommended precautions, medications, dietary advice, and workout tips to support your journey to better health.</p>
+                            
+                            <h3>Join Us on this Journey</h3>
+                            <p>We invite you to explore our platform, engage with our educational content, and take a proactive step in your health journey. Together, we can contribute to improving how individuals access and understand healthcare information.</p>
+                            <p>Thank you for choosing PharmaPal as your health information companion. We are here to empower you with knowledge and support your pursuit of a brighter, healthier future.</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+    ==================================================
+    FOOTER (REMOVED)
+    ==================================================
+    -->
+    <footer class="footer gsap-footer">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <a class="navbar-brand" href="/">
+                        <img src="{{ url_for('static', filename='img.png') }}" alt="PharmaPal Logo">
+                        PharmaPal
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2024 PharmaPal. All rights reserved.</p>
+                    <p class="mb-0">Not for medical use. For demonstration purposes only.</p>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="me-3">Disclaimer</a>
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="/contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 
+    ==================================================
+    SCRIPTS
+    ==================================================
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- GSAP Animation Script -->
+    <script>
+        // Wait for the window to load
+        window.onload = () => {
+            const tl = gsap.timeline({ defaults: { duration: 0.6, ease: 'power3.out' } });
+
+            // Animate Page Content
+            tl.from('.gsap-title', { opacity: 0, y: 20, delay: 0.2 }, "-=0.3"); // Added delay
+            tl.from('.gsap-card', { opacity: 0, y: 20 }, "-=0.4");
+            
+            // REMOVED: Footer Animation 
+            // tl.from('.gsap-footer', { opacity: 0, y: 20 }, "-=0.5");
+        };
+    </script>
+</body>
+</html>
+

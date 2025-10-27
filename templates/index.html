@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PharmaPal - AI Symptom Checker</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img.png') }}" type="image/png">
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5.1.3 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    
+    <!-- Bootstrap Icons 1.8.1 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    
+    <!-- Your Custom CSS (or static file) -->
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+    
+    <!-- Custom Styles for Theme -->
+    <style>
+        :root {
+            /* "Health-tech" teal theme */
+            --bs-primary: #00796B; /* Deep Teal */
+            --bs-primary-rgb: 0, 121, 107;
+            --bs-secondary: #e0f2f1; /* Light teal background */
+            --bs-body-bg: #f8fbfb; /* Very light Mint/Gray */
+            --card-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.12);
+        }
+
+        html {
+             scroll-behavior: smooth; /* Enable smooth scrolling */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bs-body-bg); 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #444; /* Slightly darker default text */
+        }
+        
+        .content-wrapper {
+            flex-grow: 1;
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--bs-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #555;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--bs-primary);
+        }
+        /* --- Hero Section --- */
+        .hero-section {
+            padding: 6rem 0; /* More vertical padding */
+            background: linear-gradient(135deg, rgba(224, 242, 241, 0.3), rgba(255, 255, 255, 0.1)), var(--bs-body-bg); /* Subtle gradient */
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 3.5rem; /* Larger title */
+            font-weight: 800; /* Extra bold */
+            color: #222;
+            margin-bottom: 1rem;
+        }
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #555;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-button {
+            font-weight: 600;
+            padding: 0.8rem 2rem;
+            border-radius: 50rem; /* Pill shape */
+            transition: all 0.3s ease;
+             box-shadow: 0 4px 15px -5px rgba(var(--bs-primary-rgb), 0.4);
+        }
+         .hero-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(var(--bs-primary-rgb), 0.5);
+         }
+
+        /* --- Section Styling --- */
+        section {
+            padding: 4rem 0; /* Consistent vertical padding for sections */
+        }
+        .section-alternate { /* Subtle background for alternating sections */
+             background-color: #ffffff;
+             border-top: 1px solid #eee;
+             border-bottom: 1px solid #eee;
+        }
+        .section-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 3rem; /* More space below titles */
+            text-align: center;
+        }
+        
+        /* --- "How it Works" Step Cards --- */
+        .step-card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 2rem 1.5rem;
+            border: 1px solid #e8e8e8;
+            height: 100%;
+            transition: all 0.3s ease;
+            box-shadow: var(--card-shadow);
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-hover-shadow);
+        }
+        .step-card .bi {
+            font-size: 3rem;
+            color: var(--bs-primary);
+            margin-bottom: 1rem; /* Space below icon */
+        }
+        .step-number {
+             font-size: 1.5rem;
+             font-weight: 700;
+             color: var(--bs-primary);
+             margin-bottom: 0.5rem;
+             display: block;
+        }
+
+
+        /* --- Features Section --- */
+        .feature-card {
+             background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 2rem 1.5rem;
+            border: 1px solid #e8e8e8;
+            height: 100%;
+            transition: all 0.3s ease;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+         .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-hover-shadow);
+         }
+         .feature-card .bi {
+            font-size: 2.5rem;
+            color: var(--bs-primary);
+            margin-bottom: 1rem;
+         }
+
+        /* --- Form Card --- */
+        .form-card {
+            background: #ffffff;
+            border: 1px solid #e8e8e8; 
+            border-radius: 1rem; 
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: var(--card-hover-shadow);
+        }
+        
+        .form-container .form-label {
+            font-weight: 600; /* Slightly bolder labels */
+        }
+
+        .form-container .form-control {
+            border-radius: 0.5rem; 
+            padding: 0.8rem 1.1rem; /* Slightly larger padding */
+            /* background-color: #f4f7f7; */ /* Light input background */
+        }
+        
+        .form-container .form-control:focus {
+            border-color: var(--bs-primary); 
+            box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+             background-color: #fff;
+        }
+        .form-text a {
+             transition: color 0.2s ease;
+        }
+
+        /* --- Buttons --- */
+        .submit-button {
+            font-weight: 600;
+            border-radius: 0.5rem;
+            padding: 0.8rem 1.5rem; /* Match input padding */
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px -5px rgba(var(--bs-primary-rgb), 0.4);
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(var(--bs-primary-rgb), 0.5);
+        }
+        
+        .submit-button .spinner-border {
+            margin-right: 0.5rem;
+        }
+
+        /* ==================================================
+        NEW STYLES FOR SYMPTOM SELECTOR
+        ==================================================
+        */
+
+        /* --- Selected Symptoms Area --- */
+        .selected-symptoms-area {
+            padding: 1rem 1.25rem;
+            background-color: #fafafa;
+            border-radius: 0.5rem;
+            min-height: 80px; /* Increased height */
+            margin-bottom: 1.5rem;
+            border: 1px dashed #ddd;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+        .symptom-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background-color: var(--bs-primary);
+            color: #ffffff;
+            border-radius: 2rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .symptom-pill i {
+            margin-left: 0.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .symptom-pill i:hover {
+            transform: scale(1.1);
+        }
+        .placeholder-text {
+            color: #999;
+            font-style: italic;
+            padding: 0.35rem 0;
+        }
+
+
+        /* --- Symptom List Wrapper (Dropdown) --- */
+        .symptom-list-wrapper {
+            display: none; /* Hide by default */
+            position: absolute; /* Changed from relative */
+            width: 100%; /* Make it full width of parent */
+            z-index: 1000;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: -1px; /* Connect to search bar */
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+        }
+
+        /* --- Symptom List --- */
+        .symptom-list {
+            list-style-type: none;
+            padding: 0.5rem;
+            margin-bottom: 0;
+            column-count: 1; 
+        }
+        
+        .symptom-list li {
+            padding: 0.6rem 0.75rem;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            border-radius: 0.35rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .symptom-list li:hover {
+            background-color: #f4f9f8;
+        }
+        .symptom-list li i {
+            margin-right: 0.5rem;
+            color: var(--bs-primary);
+            font-size: 0.8rem;
+        }
+        
+        /* --- Search input styling --- */
+        .search-symptoms {
+            border-radius: 0.5rem;
+        }
+        /* When dropdown is active, flatten bottom corners */
+        .search-symptoms.search-symptoms-active {
+             border-bottom-left-radius: 0;
+             border-bottom-right-radius: 0;
+        }
+        .search-symptoms:focus {
+             border-color: var(--bs-primary);
+             box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+        }
+        /* ==================================================
+        END NEW SYMPTOM STYLES
+        ==================================================
+        */
+
+
+        /* --- FAQ Section --- */
+        .accordion-button {
+            font-weight: 600;
+            color: #989090;
+        }
+        .accordion-button:not(.collapsed) {
+             background-color: var(--bs-secondary); /* Use light teal background */
+             color: var(--bs-primary);
+             box-shadow: inset 0 -1px 0 rgba(0,0,0,.08); /* Softer shadow */
+        }
+         .accordion-button:focus {
+             box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+             border-color: rgba(var(--bs-primary-rgb), 0.5); /* Lighter border */
+         }
+         .accordion-item {
+             background-color: #fff;
+             border: 1px solid #e8e8e8;
+             border-radius: 0.75rem !important; /* Slightly more rounded */
+             margin-bottom: 1rem;
+             overflow: hidden; 
+             box-shadow: var(--card-shadow);
+         }
+         .accordion-item:first-of-type,
+         .accordion-item:last-of-type {
+             border-radius: 0.75rem !important; 
+         }
+           .accordion-body {
+             background-color: #fcfdfd; /* Off-white body */
+           }
+        
+        /* --- Footer --- */
+        .footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            padding: 1.5rem 0; 
+            margin-top: 3rem; /* Ensure space above footer */
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .footer a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.2s ease; 
+        }
+        .footer a:hover {
+            color: var(--bs-primary);
+            text-decoration: underline;
+        }
+        .footer .navbar-brand img {
+             width: 30px;
+             height: 30px;
+             margin-right: 5px;
+        }
+         .footer p {
+             margin-bottom: 0.25rem; 
+         }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand" href="/"> 
+                <img src="{{ url_for('static', filename='img.png') }}" alt="PharmaPal Logo">
+                PharmaPal
+            </a>
+            
+            <!-- Toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"> 
+                        <a class="nav-link active" href="/">Home</a> 
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/developer">Developer</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/blog">Blog</a>
+                    </li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" href="/symptoms">Symptoms</a>
+                    </li>
+                </ul>
+                
+                <!-- Search -->
+                <form class="d-flex" role="search"> 
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="content-wrapper">
+
+        <!-- NEW: Hero Section -->
+        <section class="hero-section text-center gsap-hero">
+             <div class="container">
+                 <h1 class="hero-title">Intelligent Health Insights</h1>
+                 <p class="hero-subtitle">Use PharmaPal's AI to analyze your symptoms and get preliminary information about potential conditions. Fast, informative, and user-friendly.</p>
+                 <a href="#symptom-form" class="btn btn-primary hero-button scroll-link">
+                     <i class="bi bi-activity me-2"></i> Check Your Symptoms Now
+                 </a>
+             </div>
+        </section>
+
+        <main class="container my-5">
+            <div class="row">
+                <!-- Center the content -->
+                <div class="col-lg-10 col-xl-10 mx-auto">
+                    
+                    <!-- "How It Works" Section -->
+                    <section class="how-it-works-section">
+                        <h2 class="section-title gsap-how-title">How It Works</h2>
+                        <div class="row text-center g-4 mb-5">
+                            <div class="col-md-4 gsap-how-item">
+                                <div class="step-card">
+                                     <span class="step-number">1</span>
+                                    <i class="bi bi-pencil-square"></i>
+                                    <h3 class="fs-5 fw-semibold my-3">Enter Symptoms</h3>
+                                    <p class="text-muted">Use the search box below to find and select your symptoms from our verified list.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 gsap-how-item">
+                                <div class="step-card">
+                                     <span class="step-number">2</span>
+                                    <i class="bi bi-robot"></i>
+                                    <h3 class="fs-5 fw-semibold my-3">AI Analyzes</h3>
+                                    <p class="text-muted">Our advanced AI model cross-references your symptoms with a vast medical database.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 gsap-how-item">
+                                 <div class="step-card">
+                                     <span class="step-number">3</span>
+                                    <i class="bi bi-grid-3x3-gap-fill"></i>
+                                    <h3 class="fs-5 fw-semibold my-3">View Report</h3>
+                                    <p class="text-muted">Receive a detailed report including potential conditions and relevant health information.</p>
+                                 </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <!-- Main Form Card -->
+                    <section id="symptom-form" class="symptom-form-section">
+                        <h2 class="section-title text-center gsap-form-title">Symptom Checker</h2>
+                        <div class="form-card p-4 p-md-5 mb-5">
+                            <div class="form-container">
+                                
+                                <!-- Disclaimer -->
+                                <div class="alert alert-warning d-flex align-items-center gsap-form-item mb-4" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                                    <div>
+                                        <strong>Medical Disclaimer:</strong> This tool provides preliminary insights only and is not a substitute for professional medical advice. Always consult a qualified healthcare provider for diagnosis and treatment.
+                                    </div>
+                                </div>
+                                
+                                <!-- Form action now points to /results -->
+                                <form action="/results" method="post" id="predictForm">
+                                    
+                                    <!-- NEW: Selected Symptoms Area -->
+                                    <div class="gsap-form-item">
+                                        <h6 class="text-primary fw-600">Selected Symptoms:</h6>
+                                        <div class="selected-symptoms-area" id="selectedSymptomsList">
+                                            <span class="placeholder-text">No symptoms selected...</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- NEW: Search Input -->
+                                    <!-- **** MODIFICATION: Added style="z-index: 1001;" to fix layering issue **** -->
+                                    <div class="mb-3 position-relative gsap-form-item" style="z-index: 1001;">
+                                        <label for="symptomSearch" class="form-label fs-5">Enter Your Symptoms</label>
+                                        <input type="text" id="symptomSearch" class="form-control form-control-lg search-symptoms" placeholder="Type to search symptoms (e.g., 'fever')..." autocomplete="off">
+                                        
+                                        <!-- NEW: Wrapper for the dropdown list -->
+                                        <div class="symptom-list-wrapper" id="symptomListWrapper">
+                                            <ul class="symptom-list" id="symptomListUl">
+                                                <!-- All 132 symptoms dynamically added with icons -->
+                                                <li data-symptom="itching"><i class="bi bi-dot"></i>itching</li>
+                                                <li data-symptom="skin_rash"><i class="bi bi-dot"></i>skin_rash</li>
+                                                <li data-symptom="nodal_skin_eruptions"><i class="bi bi-dot"></i>nodal_skin_eruptions</li>
+                                                <li data-symptom="continuous_sneezing"><i class="bi bi-dot"></i>continuous_sneezing</li>
+                                                <li data-symptom="shivering"><i class="bi bi-dot"></i>shivering</li>
+                                                <li data-symptom="chills"><i class="bi bi-dot"></i>chills</li>
+                                                <li data-symptom="joint_pain"><i class="bi bi-dot"></i>joint_pain</li>
+                                                <li data-symptom="stomach_pain"><i class="bi bi-dot"></i>stomach_pain</li>
+                                                <li data-symptom="acidity"><i class="bi bi-dot"></i>acidity</li>
+                                                <li data-symptom="ulcers_on_tongue"><i class="bi bi-dot"></i>ulcers_on_tongue</li>
+                                                <li data-symptom="muscle_wasting"><i class="bi bi-dot"></i>muscle_wasting</li>
+                                                <li data-symptom="vomiting"><i class="bi bi-dot"></i>vomiting</li>
+                                                <li data-symptom="burning_micturition"><i class="bi bi-dot"></i>burning_micturition</li>
+                                                <li data-symptom="spotting_urination"><i class="bi bi-dot"></i>spotting_urination</li>
+                                                <li data-symptom="fatigue"><i class="bi bi-dot"></i>fatigue</li>
+                                                <li data-symptom="weight_gain"><i class="bi bi-dot"></i>weight_gain</li>
+                                                <li data-symptom="anxiety"><i class="bi bi-dot"></i>anxiety</li>
+                                                <li data-symptom="cold_hands_and_feets"><i class="bi bi-dot"></i>cold_hands_and_feets</li>
+                                                <li data-symptom="mood_swings"><i class="bi bi-dot"></i>mood_swings</li>
+                                                <li data-symptom="weight_loss"><i class="bi bi-dot"></i>weight_loss</li>
+                                                <li data-symptom="restlessness"><i class="bi bi-dot"></i>restlessness</li>
+                                                <li data-symptom="lethargy"><i class="bi bi-dot"></i>lethargy</li>
+                                                <li data-symptom="patches_in_throat"><i class="bi bi-dot"></i>patches_in_throat</li>
+                                                <li data-symptom="irregular_sugar_level"><i class="bi bi-dot"></i>irregular_sugar_level</li>
+                                                <li data-symptom="cough"><i class="bi bi-dot"></i>cough</li>
+                                                <li data-symptom="high_fever"><i class="bi bi-dot"></i>high_fever</li>
+                                                <li data-symptom="sunken_eyes"><i class="bi bi-dot"></i>sunken_eyes</li>
+                                                <li data-symptom="breathlessness"><i class="bi bi-dot"></i>breathlessness</li>
+                                                <li data-symptom="sweating"><i class="bi bi-dot"></i>sweating</li>
+                                                <li data-symptom="dehydration"><i class="bi bi-dot"></i>dehydration</li>
+                                                <li data-symptom="indigestion"><i class="bi bi-dot"></i>indigestion</li>
+                                                <li data-symptom="headache"><i class="bi bi-dot"></i>headache</li>
+                                                <li data-symptom="yellowish_skin"><i class="bi bi-dot"></i>yellowish_skin</li>
+                                                <li data-symptom="dark_urine"><i class="bi bi-dot"></i>dark_urine</li>
+                                                <li data-symptom="nausea"><i class="bi bi-dot"></i>nausea</li>
+                                                <li data-symptom="loss_of_appetite"><i class="bi bi-dot"></i>loss_of_appetite</li>
+                                                <li data-symptom="pain_behind_the_eyes"><i class="bi bi-dot"></i>pain_behind_the_eyes</li>
+                                                <li data-symptom="back_pain"><i class="bi bi-dot"></i>back_pain</li>
+                                                <li data-symptom="constipation"><i class="bi bi-dot"></i>constipation</li>
+                                                <li data-symptom="abdominal_pain"><i class="bi bi-dot"></i>abdominal_pain</li>
+                                                <li data-symptom="diarrhoea"><i class="bi bi-dot"></i>diarrhoea</li>
+                                                <li data-symptom="mild_fever"><i class="bi bi-dot"></i>mild_fever</li>
+                                                <li data-symptom="yellow_urine"><i class="bi bi-dot"></i>yellow_urine</li>
+                                                <li data-symptom="yellowing_of_eyes"><i class="bi bi-dot"></i>yellowing_of_eyes</li>
+                                                <li data-symptom="acute_liver_failure"><i class="bi bi-dot"></i>acute_liver_failure</li>
+                                                <li data-symptom="fluid_overload"><i class="bi bi-dot"></i>fluid_overload</li>
+                                                <li data-symptom="swelling_of_stomach"><i class="bi bi-dot"></i>swelling_of_stomach</li>
+                                                <li data-symptom="swelled_lymph_nodes"><i class="bi bi-dot"></i>swelled_lymph_nodes</li>
+                                                <li data-symptom="malaise"><i class="bi bi-dot"></i>malaise</li>
+                                                <li data-symptom="blurred_and_distorted_vision"><i class="bi bi-dot"></i>blurred_and_distorted_vision</li>
+                                                <li data-symptom="phlegm"><i class="bi bi-dot"></i>phlegm</li>
+                                                <li data-symptom="throat_irritation"><i class="bi bi-dot"></i>throat_irritation</li>
+                                                <li data-symptom="redness_of_eyes"><i class="bi bi-dot"></i>redness_of_eyes</li>
+                                                <li data-symptom="sinus_pressure"><i class="bi bi-dot"></i>sinus_pressure</li>
+                                                <li data-symptom="runny_nose"><i class="bi bi-dot"></i>runny_nose</li>
+                                                <li data-symptom="congestion"><i class_="bi bi-dot"></i>congestion</li>
+                                                <li data-symptom="chest_pain"><i class="bi bi-dot"></i>chest_pain</li>
+                                                <li data-symptom="weakness_in_limbs"><i class="bi bi-dot"></i>weakness_in_limbs</li>
+                                                <li data-symptom="fast_heart_rate"><i class="bi bi-dot"></i>fast_heart_rate</li>
+                                                <li data-symptom="pain_during_bowel_movements"><i class="bi bi-dot"></i>pain_during_bowel_movements</li>
+                                                <li data-symptom="pain_in_anal_region"><i class="bi bi-dot"></i>pain_in_anal_region</li>
+                                                <li data-symptom="bloody_stool"><i class="bi bi-dot"></i>bloody_stool</li>
+                                                <li data-symptom="irritation_in_anus"><i class="bi bi-dot"></i>irritation_in_anus</li>
+                                                <li data-symptom="neck_pain"><i class="bi bi-dot"></i>neck_pain</li>
+                                                <li data-symptom="dizziness"><i class="bi bi-dot"></i>dizziness</li>
+                                                <li data-symptom="cramps"><i class="bi bi-dot"></i>cramps</li>
+                                                <li data-symptom="bruising"><i class="bi bi-dot"></i>bruising</li>
+                                                <li data-symptom="obesity"><i class="bi bi-dot"></i>obesity</li>
+                                                <li data-symptom="swollen_legs"><i class="bi bi-dot"></i>swollen_legs</li>
+                                                <li data-symptom="swollen_blood_vessels"><i class="bi bi-dot"></i>swollen_blood_vessels</li>
+                                                <li data-symptom="puffy_face_and_eyes"><i class="bi bi-dot"></i>puffy_face_and_eyes</li>
+                                                <li data-symptom="enlarged_thyroid"><i class="bi bi-dot"></i>enlarged_thyroid</li>
+                                                <li data-symptom="brittle_nails"><i class="bi bi-dot"></i>brittle_nails</li>
+                                                <li data-symptom="swollen_extremeties"><i class="bi bi-dot"></i>swollen_extremeties</li>
+                                                <li data-symptom="excessive_hunger"><i class="bi bi-dot"></i>excessive_hunger</li>
+                                                <li data-symptom="extra_marital_contacts"><i class="bi bi-dot"></i>extra_marital_contacts</li>
+                                                <li data-symptom="drying_and_tingling_lips"><i class="bi bi-dot"></i>drying_and_tingling_lips</li>
+                                                <li data-symptom="slurred_speech"><i class="bi bi-dot"></i>slurred_speech</li>
+                                                <li data-symptom="knee_pain"><i class="bi bi-dot"></i>knee_pain</li>
+                                                <li data-symptom="hip_joint_pain"><i class="bi bi-dot"></i>hip_joint_pain</li>
+                                                <li data-symptom="muscle_weakness"><i class="bi bi-dot"></i>muscle_weakness</li>
+                                                <li data-symptom="stiff_neck"><i class="bi bi-dot"></i>stiff_neck</li>
+                                                <li data-symptom="swelling_joints"><i class="bi bi-dot"></i>swelling_joints</li>
+                                                <li data-symptom="movement_stiffness"><i class_="bi bi-dot"></i>movement_stiffness</li>
+                                                <li data-symptom="spinning_movements"><i class="bi bi-dot"></i>spinning_movements</li>
+                                                <li data-symptom="loss_of_balance"><i class="bi bi-dot"></i>loss_of_balance</li>
+                                                <li data-symptom="unsteadiness"><i class="bi bi-dot"></i>unsteadiness</li>
+                                                <li data-symptom="weakness_of_one_body_side"><i class="bi bi-dot"></i>weakness_of_one_body_side</li>
+                                                <li data-symptom="loss_of_smell"><i class="bi bi-dot"></i>loss_of_smell</li>
+                                                <li data-symptom="bladder_discomfort"><i class="bi bi-dot"></i>bladder_discomfort</li>
+                                                <li data-symptom="foul_smell_of_urine"><i class="bi bi-dot"></i>foul_smell_of_urine</li>
+                                                <li data-symptom="continuous_feel_of_urine"><i class="bi bi-dot"></i>continuous_feel_of_urine</li>
+                                                <li data-symptom="passage_of_gases"><i class="bi bi-dot"></i>passage_of_gases</li>
+                                                <li data-symptom="internal_itching"><i class="bi bi-dot"></i>internal_itching</li>
+                                                <li data-symptom="toxic_look_(typhos)"><i class="bi bi-dot"></i>toxic_look_(typhos)</li>
+                                                <li data-symptom="depression"><i class="bi bi-dot"></i>depression</li>
+                                                <li data-symptom="irritability"><i class="bi bi-dot"></i>irritability</li>
+                                                <li data-symptom="muscle_pain"><i class="bi bi-dot"></i>muscle_pain</li>
+                                                <li data-symptom="altered_sensorium"><i class="bi bi-dot"></i>altered_sensorium</li>
+                                                <li data-symptom="red_spots_over_body"><i class="bi bi-dot"></i>red_spots_over_body</li>
+                                                <li data-symptom="belly_pain"><i class="bi bi-dot"></i>belly_pain</li>
+                                                <li data-symptom="abnormal_menstruation"><i class="bi bi-dot"></i>abnormal_menstruation</li>
+                                                <li data-symptom="dischromic_patches"><i class="bi bi-dot"></i>dischromic_patches</li>
+                                                <li data-symptom="watering_from_eyes"><i class="bi bi-dot"></i>watering_from_eyes</li>
+                                                <li data-symptom="increased_appetite"><i class="bi bi-dot"></i>increased_appetite</li>
+                                                <li data-symptom="polyuria"><i class="bi bi-dot"></i>polyuria</li>
+                                                <li data-symptom="family_history"><i class="bi bi-dot"></i>family_history</li>
+                                                <li data-symptom="mucoid_sputum"><i class="bi bi-dot"></i>mucoid_sputum</li>
+                                                <li data-symptom="rusty_sputum"><i class="bi bi-dot"></i>rusty_sputum</li>
+                                                <li data-symptom="lack_of_concentration"><i class="bi bi-dot"></i>lack_of_concentration</li>
+                                                <li data-symptom="visual_disturbances"><i class="bi bi-dot"></i>visual_disturbances</li>
+                                                <li data-symptom="receiving_blood_transfusion"><i class="bi bi-dot"></i>receiving_blood_transfusion</li>
+                                                <li data-symptom="receiving_unsterile_injections"><i class="bi bi-dot"></i>receiving_unsterile_injections</li>
+                                                <li data-symptom="coma"><i class="bi bi-dot"></i>coma</li>
+                                                <li data-symptom="stomach_bleeding"><i class_="bi bi-dot"></i>stomach_bleeding</li>
+                                                <li data-symptom="distention_of_abdomen"><i class="bi bi-dot"></i>distention_of_abdomen</li>
+                                                <li data-symptom="history_of_alcohol_consumption"><i class="bi bi-dot"></i>history_of_alcohol_consumption</li>
+                                                <li data-symptom="fluid_overload.1"><i class="bi bi-dot"></i>fluid_overload.1</li>
+                                                <li data-symptom="blood_in_sputum"><i class="bi bi-dot"></i>blood_in_sputum</li>
+                                                <li data-symptom="prominent_veins_on_calf"><i class="bi bi-dot"></i>prominent_veins_on_calf</li>
+                                                <li data-symptom="palpitations"><i class="bi bi-dot"></i>palpitations</li>
+                                                <li data-symptom="painful_walking"><i class="bi bi-dot"></i>painful_walking</li>
+                                                <li data-symptom="pus_filled_pimples"><i class="bi bi-dot"></i>pus_filled_pimples</li>
+                                                <li data-symptom="blackheads"><i class="bi bi-dot"></i>blackheads</li>
+                                                <li data-symptom="scurring"><i class="bi bi-dot"></i>scurring</li>
+                                                <li data-symptom="skin_peeling"><i class="bi bi-dot"></i>skin_peeling</li>
+                                                <li data-symptom="silver_like_dusting"><i class="bi bi-dot"></i>silver_like_dusting</li>
+                                                <li data-symptom="small_dents_in_nails"><i class="bi bi-dot"></i>small_dents_in_nails</li>
+                                                <li data-symptom="inflammatory_nails"><i class="bi bi-dot"></i>inflammatory_nails</li>
+                                                <li data-symptom="blister"><i class="bi bi-dot"></i>blister</li>
+                                                <li data-symptom="red_sore_around_nose"><i class="bi bi-dot"></i>red_sore_around_nose</li>
+                                                <li data-symptom="yellow_crust_ooze"><i class="bi bi-dot"></i>yellow_crust_ooze</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- NEW: Hidden input to hold the comma-separated symptom string -->
+                                    <input type="hidden" id="symptoms_hidden" name="symptoms">
+                                    
+                                    <!-- Error message display -->
+                                    <!-- {% if message %}
+                                    <div class="alert alert-danger gsap-form-item" role="alert">
+                                        {{ message }}
+                                    </div>
+                                    {% endif %} -->
+                                    
+                                    <div class="d-grid gsap-form-item mt-4">
+                                        <!-- Button with Spinner -->
+                                        <button type="submit" class="btn btn-primary btn-lg submit-button" id="predictButton">
+                                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                            <span class="button-text">Analyze Symptoms</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Features Section -->
+                    <section class="features-section section-alternate text-center">
+                        <h2 class="section-title gsap-features-title">Why Choose PharmaPal?</h2>
+                        <div class="row g-4">
+                            <div class="col-md-4 gsap-features-item">
+                                <div class="feature-card">
+                                    <i class="bi bi-brain"></i>
+                                    <h4 class="fs-5 fw-semibold mb-2">AI-Powered Analysis</h4>
+                                    <p class="text-muted">Leverages advanced machine learning for intelligent symptom assessment based on extensive data.</p>
+                                </div>
+                            </div>
+                             <div class="col-md-4 gsap-features-item">
+                                <div class="feature-card">
+                                    <i class="bi bi-journal-text"></i>
+                                    <h4 class="fs-5 fw-semibold mb-2">Comprehensive Info</h4>
+                                    <p class="text-muted">Provides descriptions, precautions, and lifestyle tips related to potential conditions.</p>
+                                </div>
+                            </div>
+                             <div class="col-md-4 gsap-features-item">
+                                <div class="feature-card">
+                                     <i class="bi bi-hand-thumbs-up"></i>
+                                    <h4 class="fs-5 fw-semibold mb-2">User-Friendly</h4>
+                                    <p class="text-muted">Simple interface makes it easy to enter symptoms and understand the generated report.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                     <!-- FAQ Section -->
+                     <section class="faq-section my-5">
+                         <h2 class="section-title text-center gsap-faq-title">Frequently Asked Questions</h2>
+                         <div class="accordion gsap-faq-item" id="faqAccordion">
+                             <div class="accordion-item">
+                                 <h2 class="accordion-header" id="headingOne">
+                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                         How accurate is the AI prediction?
+                                     </button>
+                                 </h2>
+                                 <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                                     <div class="accordion-body text-muted">
+                                         Our AI model is trained on a large dataset, but its predictions are for informational purposes only. It is not a substitute for a diagnosis from a qualified healthcare professional. Accuracy can vary based on the symptoms provided.
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="accordion-item">
+                                 <h2 class="accordion-header" id="headingTwo">
+                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                         Is my symptom data kept private?
+                                     </button>
+                                 </h2>
+                                 <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                                     <div class="accordion-body text-muted">
+                                         Yes, we prioritize your privacy. The symptom data you provide is used solely for the prediction process during your session and is not stored or shared. (Note: This is a placeholder answer - ensure your implementation matches this claim).
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="accordion-item">
+                                 <h2 class="accordion-header" id="headingThree">
+                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                         Can this tool replace visiting a doctor?
+                                     </button>
+                                 </h2>
+                                 <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                                     <div class="accordion-body text-muted">
+                                         Absolutely not. PharmaPal is designed to provide preliminary information and potential insights based on symptoms. It cannot replace the expertise, examination, and diagnosis provided by a licensed medical professional. Always consult a doctor for health concerns.
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </section>
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 
+    ==================================================
+    FOOTER
+    ==================================================
+    -->
+     <footer class="footer gsap-footer">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <a class="navbar-brand" href="/">
+                        <img src="https://placehold.co/30x30/00796B/FFFFFF?text=P" alt="PharmaPal Logo">
+                        PharmaPal
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2024 PharmaPal. All rights reserved.</p>
+                    <p class="mb-0">Not for medical use. For demonstration purposes only.</p>
+                </div>
+                <div class="col-md-4">
+                    <a href="#" class="me-3">Disclaimer</a>
+                    <a href="#" class="me-3">Privacy Policy</a>
+                    <a href="/contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 
+    ==================================================
+    SCRIPTS
+    ==================================================
+    -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- GSAP Animation & Form Logic -->
+    <script>
+        // Wait for the window to load
+        window.onload = () => {
+            const tl = gsap.timeline({ defaults: { duration: 0.6, ease: 'power3.out' } });
+
+            // Animate Hero Section
+            tl.from('.gsap-hero h1', { opacity: 0, y: 20, delay: 0.2 })
+              .from('.gsap-hero p', { opacity: 0, y: 15 }, "-=0.4")
+              .from('.gsap-hero .hero-button', { opacity: 0, y: 10 }, "-=0.4");
+              
+            // Animate "How it Works"
+            tl.from('.gsap-how-title', { opacity: 0, y: 20 }, "-=0.3");
+            tl.from('.gsap-how-item', { opacity: 0, y: 20, stagger: 0.1 }, "-=0.4");
+
+             // Animate Form Section Title
+             tl.from('.gsap-form-title', { opacity: 0, y: 20 }, "-=0.3");
+             
+            // Animate Form Card & Items
+            tl.from('.form-card', { opacity: 0, y: 50 }, "-=0.4");
+            tl.from('.gsap-form-item', { opacity: 0, y: 20, stagger: 0.1 }, "-=0.4");
+
+             // Animate Features Section
+             tl.from('.gsap-features-title', { opacity: 0, y: 20 }, "-=0.3");
+             tl.from('.gsap-features-item', { opacity: 0, y: 20, stagger: 0.1 }, "-=0.4");
+
+             // Animate FAQ Section
+             tl.from('.gsap-faq-title', { opacity: 0, y: 20 }, "-=0.3");
+             tl.from('.gsap-faq-item', { opacity: 0, y: 20, stagger: 0.1 }, "-=0.4");
+            
+            // Animate Footer
+            tl.from('.gsap-footer', { opacity: 0, y: 20 }, "-=0.5");
+        };
+        
+
+        // 
+        // --- NEW SYMPTOM SELECTOR LOGIC ---
+        //
+        const searchInput = document.getElementById('symptomSearch');
+        const listWrapper = document.getElementById('symptomListWrapper');
+        const symptomListUl = document.getElementById('symptomListUl');
+        const allSymptoms = symptomListUl.getElementsByTagName('li');
+        const selectedSymptomsList = document.getElementById('selectedSymptomsList');
+        const placeholderText = selectedSymptomsList.querySelector('.placeholder-text');
+
+        // Use a Set for efficient tracking of selected symptoms
+        const selectedSymptoms = new Set();
+
+        // --- Function to update placeholder text visibility ---
+        function updatePlaceholder() {
+            if (selectedSymptoms.size > 0) {
+                placeholderText.style.display = 'none';
+            } else {
+                placeholderText.style.display = 'block';
+            }
+        }
+        
+        // --- Function to reset validation error state ---
+        function resetValidationError() {
+             const selectedArea = document.getElementById('selectedSymptomsList');
+            selectedArea.style.border = '1px dashed #ddd';
+            if(placeholderText) {
+                placeholderText.textContent = 'No symptoms selected...';
+                placeholderText.style.color = '#999';
+            }
+        }
+
+        // --- Function to add a symptom pill ---
+        function addSymptom(symptomText) {
+            if (selectedSymptoms.has(symptomText)) {
+                return; // Already selected
+            }
+            
+            resetValidationError(); // Clear error on add
+
+            // Add to Set
+            selectedSymptoms.add(symptomText);
+
+            // Create pill element
+            const pill = document.createElement('span');
+            pill.className = 'symptom-pill';
+            pill.textContent = symptomText;
+            
+            const removeIcon = document.createElement('i');
+            removeIcon.className = 'bi bi-x';
+            
+            // Add event listener to remove icon
+            removeIcon.addEventListener('click', function() {
+                // Remove from Set
+                selectedSymptoms.delete(symptomText);
+                // Remove pill from DOM
+                selectedSymptomsList.removeChild(pill);
+                // Update placeholder
+                updatePlaceholder();
+                // Re-filter the list to show this item again
+                filterList(); 
+            });
+
+            pill.appendChild(removeIcon);
+            selectedSymptomsList.appendChild(pill);
+            updatePlaceholder();
+        }
+
+        // --- Function to filter the dropdown list ---
+        function filterList() {
+            const filter = searchInput.value.toLowerCase();
+            let hasMatches = false;
+
+            for (let i = 0; i < allSymptoms.length; i++) {
+                const li = allSymptoms[i];
+                const symptomText = li.dataset.symptom;
+                
+                const isSelected = selectedSymptoms.has(symptomText);
+                const matchesFilter = symptomText.toLowerCase().startsWith(filter);
+
+                if (matchesFilter && !isSelected) {
+                    li.style.display = 'flex';
+                    hasMatches = true;
+                } else {
+                    li.style.display = 'none';
+                }
+            }
+            
+            // Show/Hide the wrapper based on input and matches
+            if (filter.length > 0 && hasMatches) {
+                listWrapper.style.display = 'block';
+                searchInput.classList.add('search-symptoms-active');
+            } else {
+                listWrapper.style.display = 'none';
+                searchInput.classList.remove('search-symptoms-active');
+            }
+        }
+
+        // --- Event Listener for Search Input ---
+        searchInput.addEventListener('keyup', filterList);
+
+        // --- Event Listener for Clicks on the Dropdown List (Delegation) ---
+        symptomListUl.addEventListener('click', function(e) {
+            const clickedLi = e.target.closest('li');
+            if (!clickedLi) return; // Didn't click on an LI
+
+            const symptomText = clickedLi.dataset.symptom;
+            
+            // Add the symptom
+            addSymptom(symptomText);
+
+            // Clear input and hide list
+            searchInput.value = '';
+            listWrapper.style.display = 'none';
+            searchInput.classList.remove('search-symptoms-active');
+            searchInput.focus(); // Keep focus on input for easy next entry
+
+            // Re-filter to hide the now-selected item from the (hidden) list
+            filterList();
+        });
+
+        // --- Hide dropdown if clicked outside ---
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !listWrapper.contains(e.target)) {
+                listWrapper.style.display = 'none';
+                searchInput.classList.remove('search-symptoms-active');
+            }
+        });
+
+        // --- Keep dropdown open if search is focused ---
+        searchInput.addEventListener('focus', filterList);
+
+        // Initial setup
+        updatePlaceholder();
+        // --- END NEW SYMPTOM LOGIC ---
+
+
+        
+        // --- UPDATED Form submission logic ---
+        const predictForm = document.getElementById('predictForm');
+        if (predictForm) {
+            predictForm.addEventListener('submit', function(e) { // Added 'e'
+                
+                // --- Populate hidden input ---
+                const symptomsHiddenInput = document.getElementById('symptoms_hidden');
+                const symptomsArray = Array.from(selectedSymptoms);
+                symptomsHiddenInput.value = symptomsArray.join(',');
+
+                // --- Validation ---
+                if (symptomsArray.length === 0) {
+                    // Stop the form from submitting
+                    e.preventDefault(); 
+                    
+                    // Show visual error
+                    const selectedArea = document.getElementById('selectedSymptomsList');
+                    selectedArea.style.border = '1px solid red';
+                    placeholderText.textContent = 'Please select at least one symptom.';
+                    placeholderText.style.color = 'red';
+                    placeholderText.style.display = 'block';
+
+                    // Simple shake animation
+                    selectedArea.animate([
+                        { transform: 'translateX(0)' },
+                        { transform: 'translateX(-10px)' },
+                        { transform: 'translateX(10px)' },
+                        { transform: 'translateX(-10px)' },
+                        { transform: 'translateX(0)' }
+                    ], { duration: 300, iterations: 1 });
+
+                    return; // Stop execution
+                }
+
+                // --- If valid, show spinner ---
+                const button = document.getElementById('predictButton');
+                const spinner = button.querySelector('.spinner-border');
+                const buttonText = button.querySelector('.button-text');
+                
+                button.disabled = true;
+                spinner.classList.remove('d-none');
+                buttonText.textContent = 'Analyzing...';
+            });
+        }
+        
+        // Smooth scroll for links with class 'scroll-link'
+        document.querySelectorAll('.scroll-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                     // Add slight offset if navbar is sticky
+                     const navbarHeight = document.querySelector('.navbar').offsetHeight || 0;
+                     const elementPosition = targetElement.getBoundingClientRect().top;
+                     const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 20; // 20px extra space
+              
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
+
